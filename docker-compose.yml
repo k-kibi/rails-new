@@ -1,0 +1,34 @@
+version: '3.4'
+services:
+  rails-new:
+    container_name: kibi-rails-new
+    working_dir: /k-kibi/rails-new
+    command: bundle exec rails s -p 3000 -b 0.0.0.0
+    build:
+      context: .
+      args:
+        ruby_version: "3.0.1"
+      target: dev
+    environment:
+      DATABASE_HOST: "rails-new-postgres"
+    depends_on: ["rails-new-postgres"]
+    volumes:
+      - .:/k-kibi/rails-new:cached
+      - rails-new-vendor:/vendor
+      - tmp-rails-new:/k-kibi/rails-new/tmp
+    tty: true
+    stdin_open: true
+
+  rails-new-postgres:
+    container_name: kibi-rails-new-postgres
+    image: postgres:11.7-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - rails-new-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  rails-new-vendor:
+  tmp-rails-new:
+  rails-new-postgres-data:
